@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Funkcje</string>
+    <string name="action_settings">Settings</string>
+    <string name="quadric_a">a</string>
+    <string name="quadric_b">b</string>
+    <string name="quadric_c">c</string>
+    <string name="generating">...Generating...</string>
+    <string name="title_activity_second">Funkcja Kwadratowa</string>
+</resources>
