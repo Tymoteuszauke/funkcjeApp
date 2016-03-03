@@ -4,6 +4,15 @@
     <string name="quadric_a">a</string>
     <string name="quadric_b">b</string>
     <string name="quadric_c">c</string>
-    <string name="generating">...Generating...</string>
+    <string name="generating">Generating</string>
     <string name="title_activity_second">Funkcja Kwadratowa</string>
+    <string name="if_null">Wypełnij wszystkie pola</string>
+
+    <string-array name="spinner_bar">
+        <item>Liniowa</item>
+        <item>Kwadratowa</item>
+        <item>Wielomian</item>
+    </string-array>
+    <string name="title_activity_wykladnicza">WykladniczaActivity</string>
+
 </resources>

@@ -7,6 +7,7 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/viewnew"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:orientation="horizontal">
@@ -15,19 +16,21 @@
 
         <EditText
             android:id="@+id/quadric_a"
-            android:inputType="number"
+            android:inputType="numberDecimal|numberSigned"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/quadric_a" />
+            android:hint="@string/quadric_a"
+            />
 
         <EditText android:id="@+id/quadric_b"
-            android:inputType="number"
+            android:inputType="numberDecimal|numberSigned"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/quadric_b" />
 
         <EditText android:id="@+id/quadric_c"
-            android:inputType="number"
+            android:inputType="numberDecimal|numberSigned"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/quadric_c" />
@@ -38,8 +41,7 @@
         android:id="@+id/aButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Throw!"
-        android:onClick="Throwed!"/>
+        android:text="Generate" />
 
 
     </LinearLayout>

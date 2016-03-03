@@ -1,123 +1,150 @@
 package com.example.mateu_000.funkcje;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
+
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class SecondActivity extends AppCompatActivity {
 
     private TextView wzor;
-    private Bundle budlencja;
-    private Intent sendIntent;
-    MyDraw draw;
 
-    Bitmap bmp;
-    Canvas canvas;
+    private Button plus;
+    private Button minus;
+
+    private ArrayList<Double> tablica;
+    private StringBuilder wzorek;
+
+    private MyDraw funkcja;
+
+    private ScaleGestureDetector SGD;
+
+    private static final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_second2);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        String valueA;
-        String valueB;
-        String valueC;
+        tablica = new ArrayList<>();
 
-        budlencja = getIntent().getExtras();
-        valueA = budlencja.getString("elo1");
-        valueB = budlencja.getString("elo2");
-        valueC = budlencja.getString("elo3");
+        tablica = (ArrayList<Double>) getIntent().getSerializableExtra("numbers");
+
+        wzorek = new StringBuilder(tablica.size()*10);
+
+        setTitle("Wielomian " + (tablica.size()-1) + " stopnia");
+
+        for (int i = tablica.size()-1; i >= 0 ; i--) {
+
+            if (i != 1 && i != 0){
+                wzorek.append(tablica.get(i)).append("x").append("^").append(i).append(" ");
+            }
+            if (i == 1) {
+                wzorek.append(tablica.get(i)).append("x").append(" ");
+            }
+            if (i == 0) {
+                wzorek.append(tablica.get(i));
+            }
+            if (i != 0) {
+                wzorek.append(" + ");
+            }
+
+        }
+
+        String x_1 = wzorek.toString();
 
         wzor = (TextView) findViewById(R.id.wzor);
 
-        wzor.setText(valueA + "x^2" + " + " + valueB + "x" + " + " + valueC);
+        wzor.setText(x_1);
 
-        //getIntent().removeExtra((String) wzor.getText());
+        funkcja = new MyDraw(this, tablica);
 
-        //customCanvas = (View) findViewById(R.id.wykres);
+        SGD = new ScaleGestureDetector(this, new ScaleListener());
 
+        LinearLayout drawLayout = (LinearLayout)this.findViewById(R.id.linear_layout_draw);
 
+        drawLayout.addView(funkcja);
 
-        bmp = Bitmap.createBitmap(200,200, Bitmap.Config.ARGB_8888);
-        canvas = new Canvas(bmp);
+        drawLayout.setOnTouchListener(new LinearLayout.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent m) {
+                SGD.onTouchEvent(m);
+                return true;
+            }
+        });
 
+        plus = (Button) findViewById(R.id.plusik);
+        minus = (Button) findViewById(R.id.minusik);
 
+        plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-
-
-        //draw.onDraw();
-
-
-
-        sendIntent = new Intent();
-
-                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-                fab.setOnClickListener(new View.OnClickListener() {
+                Runnable task = new Runnable() {
                     @Override
-                    public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+                    public void run() {
 
-                        sendIntent.setAction(Intent.ACTION_SEND);
-                        sendIntent.putExtra(Intent.EXTRA_TEXT, wzor.getText());
-                        sendIntent.setType("text/plain");
-                        startActivity(sendIntent);
+                        funkcja.setScale(funkcja.getScale() + 5);
+                        funkcja.postInvalidate();
 
+                    }
+                };
+
+                worker.schedule(task, 0, TimeUnit.SECONDS);
+
+
+            }
+        });
+
+        minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                funkcja.setScale(funkcja.getScale() - 5);
+                funkcja.invalidate();
             }
         });
 
     }
 
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+
+            float scaleFactor = detector.getScaleFactor();
+
+            funkcja.setScale(funkcja.getScale() * scaleFactor);
+
+            funkcja.invalidate();
 
 
 
-}
+            return true;
+        }
 
-class MyDraw extends View {
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector detector) {
+            return true;
+        }
 
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
 
-
-    public MyDraw(Context context) {
-        super(context);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas)
-    {
-        super.onDraw(canvas);
-
-
-        Path path = new Path();
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(8);
-        paint.setColor(Color.parseColor("#CD5C5C"));
-
-
-        path.moveTo(0, -130);
-        path.lineTo(-50, 60);
-        path.lineTo(0, 30);
-        path.lineTo(50, 60);
-        path.close();
-        path.offset(50, 80);
-
-        canvas.drawPath(path, paint);
-
-
-
-
+        }
     }
 }
+
+
